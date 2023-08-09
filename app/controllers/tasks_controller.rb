@@ -6,6 +6,13 @@ class TasksController < ApplicationController
   def index
     @tasks = Task.all
   
+    # Search by keywords in title or description
+    if params[:search].present?
+      # Use ILIKE for case-insensitive search in PostgreSQL
+      # I'm using SQL Lite here so I can't use ILIKE
+      @tasks = @tasks.where("title LIKE ? OR description LIKE ?", "%#{params[:search]}%", "%#{params[:search]}%")
+    end
+    
     # Filter by status
     if params[:completed].present?
       @tasks = @tasks.where(completed: params[:completed])
@@ -21,6 +28,9 @@ class TasksController < ApplicationController
       @tasks = @tasks.where(priority: params[:priority])
     end
   
+    # Pagination
+    @tasks = @tasks.page(params[:page]).per(params[:per_page] || 10)
+
     render json: @tasks
   end
   
