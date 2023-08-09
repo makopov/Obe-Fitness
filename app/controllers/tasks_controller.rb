@@ -1,10 +1,11 @@
 class TasksController < ApplicationController
   before_action :set_task, only: %i[ show edit update destroy ]
+  before_action :current_user
   skip_before_action :verify_authenticity_token
 
   # GET /tasks or /tasks.json
   def index
-    @tasks = Task.all
+    @tasks = current_user.tasks 
   
     # Search by keywords in title or description
     if params[:search].present?
@@ -62,7 +63,7 @@ class TasksController < ApplicationController
   
   # POST /tasks or /tasks.json
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.build(task_params)
 
     respond_to do |format|
       if @task.save
@@ -99,13 +100,25 @@ class TasksController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_task
-      @task = Task.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def task_params
-      params.require(:task).permit(:title, :description, :due_date, :priority)
+  # Use callbacks to share common setup or constraints between actions.
+  def set_task
+    @task = current_user.tasks.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def task_params
+    params.require(:task).permit(:title, :description, :due_date, :priority)
+  end
+
+  def current_user
+    return @current_user if @current_user.present?
+
+    if params[:user_id].present?
+      @current_user = User.find(params[:user_id])
+    else
+      raise "User ID is required"
     end
+  end
+
 end

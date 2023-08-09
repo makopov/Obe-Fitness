@@ -1,0 +1,21 @@
+<!-- app/views/users/task_summary.html.erb -->
+<h1>Task Summary for <%= current_user.name %></h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Priority Level</th>
+      <th>Completed Tasks</th>
+      <th>Incomplete Tasks</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @summary.each do |row| %>
+      <tr>
+        <td><%= row.priority_level %></td>
+        <td><%= row.completed_tasks %></td>
+        <td><%= row.incomplete_tasks %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
