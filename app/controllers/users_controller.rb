@@ -58,6 +58,7 @@ class UsersController < ApplicationController
     end
   end
 
+  # GET /users/1/task_summary
   def task_summary
     @summary = @user.tasks
       .select(
